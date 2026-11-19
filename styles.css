@@ -164,14 +164,23 @@ main { padding: clamp(1.2rem, 4vw, 2.6rem) clamp(1rem, 4vw, 2.5rem) 3rem; max-wi
 .qbox { background: #f2fbfa; border: 2px solid #cbe9e6; border-radius: 16px; padding: 1rem 1.2rem; }
 .qbox h3 { font-size: 1.1rem; margin-bottom: .6rem; }
 .qbox h3 .qmark { color: var(--teal-deep); }
-textarea {
-  width: 100%; min-height: 110px; resize: vertical;
-  font-family: inherit; font-size: 1.05rem; line-height: 1.5; color: var(--ink);
-  padding: .8rem .9rem; border: 2px solid #b9dcd8; border-radius: 12px; background: #fff;
+.notebook {
+  display: flex; gap: .8rem; align-items: flex-start;
+  background: #fff; border: 2px dashed #b9dcd8; border-radius: 12px;
+  padding: .9rem 1rem;
 }
-textarea:focus { outline: 3px solid var(--teal); outline-offset: 1px; border-color: var(--teal); }
-.qactions { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin-top: .7rem; }
-.saved-note { font-size: .9rem; font-weight: 700; color: var(--leaf); }
+.notebook-icon { font-size: 1.5rem; line-height: 1.1; }
+.notebook p { margin: 0; font-size: 1rem; }
+.notebook strong { color: var(--teal-deep); }
+.tick {
+  display: flex; align-items: center; gap: .75rem; width: fit-content;
+  min-height: 48px; margin-top: .9rem; padding: .5rem .9rem;
+  background: #fff; border: 2px solid #cbe9e6; border-radius: 12px;
+  font-weight: 700; cursor: pointer;
+}
+.tick:hover { border-color: var(--teal); }
+.tick input { width: 26px; height: 26px; accent-color: var(--teal-deep); cursor: pointer; flex: none; }
+.tick.on { background: #eef9ea; border-color: var(--leaf); }
 
 .talk {
   margin-top: 1rem; padding: .8rem 1rem; border-radius: 14px;
@@ -310,13 +319,13 @@ textarea:focus { outline: 3px solid var(--teal); outline-offset: 1px; border-col
 .print-sheet { display: none; }
 
 @media print {
-  .topbar, .sitefoot, .cardnav, .cardmap, .toast, .qactions, .btn, main { display: none !important; }
+  .topbar, .sitefoot, .cardnav, .cardmap, .toast, .btn, main { display: none !important; }
   body { background: #fff; font-size: 12pt; }
   .print-sheet { display: block; }
   .print-sheet h1 { font-size: 20pt; margin-bottom: .2em; }
   .print-sheet .psub { color: #555; margin-bottom: 1.2em; }
   .print-sheet .pitem { page-break-inside: avoid; margin-bottom: 1.1em; border-bottom: 1px solid #ddd; padding-bottom: .7em; }
   .print-sheet .pq { font-weight: 700; margin: 0 0 .2em; }
-  .print-sheet .pa { margin: 0; white-space: pre-wrap; }
-  .print-sheet .pblank { color: #888; font-style: italic; }
+  .print-sheet .plines { margin-top: .3em; }
+  .print-sheet .pline { border-bottom: 1px solid #999; height: 1.7em; }
 }

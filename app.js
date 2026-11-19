@@ -186,15 +186,15 @@ const STORE_KEY = "fossilDetectives.v1";
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (!raw) return { answers: {}, best: null, lastScore: null };
+    if (!raw) return { done: {}, best: null, lastScore: null };
     const parsed = JSON.parse(raw);
     return {
-      answers: parsed && typeof parsed.answers === "object" && parsed.answers ? parsed.answers : {},
+      done: parsed && typeof parsed.done === "object" && parsed.done ? parsed.done : {},
       best: typeof parsed.best === "number" ? parsed.best : null,
       lastScore: typeof parsed.lastScore === "number" ? parsed.lastScore : null
     };
   } catch (err) {
-    return { answers: {}, best: null, lastScore: null };
+    return { done: {}, best: null, lastScore: null };
   }
 }
 
@@ -239,7 +239,7 @@ function toast(message) {
 }
 
 function answeredCount() {
-  return CARDS.reduce((n, _card, i) => n + (String(state.answers[i] || "").trim() ? 1 : 0), 0);
+  return CARDS.reduce((n, _card, i) => n + (state.done[i] ? 1 : 0), 0);
 }
 
 /* ---------- navigation ---------- */
@@ -300,7 +300,7 @@ function renderCardMap() {
   const map = $("#cardMap");
   map.replaceChildren();
   CARDS.forEach((card, i) => {
-    const done = String(state.answers[i] || "").trim().length > 0;
+    const done = !!state.done[i];
     const btn = el("button", {
       type: "button",
       class: "mapdot" + (done ? " done" : "") + (i === cardIndex ? " current" : ""),
@@ -333,43 +333,26 @@ function updateResearchProgress() {
 function renderCard(index) {
   const card = CARDS[index];
   const host = $("#researchCard");
-  const saved = state.answers[index] || "";
 
-  const textarea = el("textarea", {
-    id: "answerBox",
-    rows: "4",
-    placeholder: "Write your answer here in a complete sentence…",
-    "aria-labelledby": "questionText"
-  });
-  textarea.value = saved;
+  const tickBox = el("input", { type: "checkbox", id: "tickBox" });
+  tickBox.checked = !!state.done[index];
 
-  const savedNote = el("span", { class: "saved-note", id: "savedNote", role: "status" });
-  savedNote.textContent = saved.trim() ? "✓ Saved" : "";
+  const tick = el("label", { class: "tick" + (tickBox.checked ? " on" : "") },
+    tickBox,
+    el("span", { text: "I wrote this answer in my notebook" })
+  );
 
-  let saveTimer = null;
-  textarea.addEventListener("input", () => {
-    state.answers[index] = textarea.value;
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
-      saveState();
-      savedNote.textContent = textarea.value.trim() ? "✓ Saved" : "";
-      renderCardMap();
-      updateResearchProgress();
-    }, 400);
-  });
-
-  const saveBtn = el("button", {
-    class: "btn btn-teal",
-    type: "button",
-    text: "Save my answer",
-    onclick: () => {
-      state.answers[index] = textarea.value;
-      saveState();
-      savedNote.textContent = textarea.value.trim() ? "✓ Saved" : "";
-      renderCardMap();
-      updateResearchProgress();
-      toast(textarea.value.trim() ? "Answer saved!" : "Write an answer first, then save.");
-    }
+  tickBox.addEventListener("change", () => {
+    if (tickBox.checked) state.done[index] = true;
+    else delete state.done[index];
+    saveState();
+    tick.classList.toggle("on", tickBox.checked);
+    renderCardMap();
+    updateResearchProgress();
+    renderHomeMeta();
+    toast(tickBox.checked
+      ? "Great — stop " + (index + 1) + " is done!"
+      : "Stop " + (index + 1) + " is not finished yet.");
   });
 
   const sample = el("details", { class: "sample" },
@@ -388,8 +371,14 @@ function renderCard(index) {
     el("div", { class: "reading" }, el("p", { text: card.reading })),
     el("div", { class: "qbox" },
       el("h3", { id: "questionText" }, el("span", { class: "qmark", text: "? " }), card.question),
-      textarea,
-      el("div", { class: "qactions" }, saveBtn, savedNote)
+      el("div", { class: "notebook" },
+        el("span", { class: "notebook-icon", "aria-hidden": "true", text: "📓" }),
+        el("p", {},
+          el("strong", { text: "Write your answer in your notebook. " }),
+          "Use a complete sentence. Then read it once more, and tick the box."
+        )
+      ),
+      tick
     ),
     el("p", { class: "talk" },
       el("strong", { text: "Turn and talk: " }),
@@ -600,16 +589,19 @@ function renderResults(shell) {
 /* ---------- print sheet ---------- */
 function buildPrintSheet() {
   const sheet = $("#printSheet");
-  const items = CARDS.map((card, i) => {
-    const answer = String(state.answers[i] || "").trim();
-    return el("div", { class: "pitem" },
+  const lines = () => el("div", { class: "plines" },
+    el("div", { class: "pline" }), el("div", { class: "pline" }), el("div", { class: "pline" })
+  );
+  const items = CARDS.map((card, i) =>
+    el("div", { class: "pitem" },
       el("p", { class: "pq", text: (i + 1) + ". " + card.question }),
-      el("p", { class: answer ? "pa" : "pa pblank", text: answer || "____________________________________________________" })
-    );
-  });
+      lines()
+    )
+  );
   sheet.replaceChildren(
-    el("h1", { text: "Fossil Detectives — My Research Notes" }),
+    el("h1", { text: "Fossil Detectives — Notebook Sheet" }),
     el("p", { class: "psub", text: "Name: ______________________________     Date: ______________" }),
+    el("p", { class: "psub", text: "Read each card on the website, then write your answer on the lines." }),
     ...items
   );
 }
@@ -646,8 +638,9 @@ function renderTeacher() {
       el("h2", { text: "How to run the lesson" }),
       el("ul", {},
         el("li", { text: "Students can work independently: each research card has one short reading and one question." }),
-        el("li", { text: "Answers save in the browser on that device. Use “Print my notes” to collect written work." }),
+        el("li", { text: "Students write every answer in their science notebook, then tick the box on each card; the tick marks are saved on that device." }),
         el("li", { text: "The sample answer is hidden behind a click, so students try first." }),
+        el("li", { text: "“Print worksheet” gives a blank sheet with all 15 questions and writing lines, for students who prefer paper." }),
         el("li", { text: "The quiz gives instant feedback and a score out of 8, with a review of every question." }),
         el("li", { text: "“Turn and talk” prompts work well as a partner or whole-class discussion after each card." })
       )
@@ -668,15 +661,15 @@ function renderTeacher() {
         el("button", {
           class: "btn btn-ghost",
           type: "button",
-          text: "Clear saved answers on this device",
+          text: "Clear saved progress and quiz scores",
           onclick: () => {
-            if (!window.confirm("Delete every saved research answer and quiz score on this device?")) return;
-            state = { answers: {}, best: null, lastScore: null };
+            if (!window.confirm("Delete every saved tick and quiz score on this device?")) return;
+            state = { done: {}, best: null, lastScore: null };
             saveState();
             cardIndex = 0;
             resetQuiz();
             renderHomeMeta();
-            toast("Saved answers cleared.");
+            toast("Saved progress cleared.");
           }
         })
       )
