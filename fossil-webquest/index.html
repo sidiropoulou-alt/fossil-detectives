@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fossil Detectives — Grade 3 Science</title>
+<meta name="description" content="An independent research webquest and quiz about fossils for grade 3 students.">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦴</text></svg>">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="topbar">
+  <button class="brand" id="brandBtn" type="button" aria-label="Go to the start page">
+    <span class="brand-mark" aria-hidden="true">🦴</span>
+    <span class="brand-text">Fossil Detectives</span>
+  </button>
+  <nav class="topnav" aria-label="Main">
+    <button class="navbtn" data-go="home" type="button">Start</button>
+    <button class="navbtn" data-go="research" type="button">Research Lab</button>
+    <button class="navbtn" data-go="quiz" type="button">Quiz</button>
+  </nav>
+</header>
+
+<main id="main">
+
+  <!-- ============ HOME ============ -->
+  <section class="screen" id="screen-home" aria-labelledby="homeTitle">
+    <div class="hero">
+      <p class="eyebrow">Grade 3 Science • Webquest &amp; Quiz</p>
+      <h1 id="homeTitle">Become a <span class="hl">Fossil Detective</span></h1>
+      <p class="lede">Read the clues, write your answers, then test what you know. You can work on your own — everything saves in this browser.</p>
+      <div class="hero-art" aria-hidden="true">
+        <span>🦴</span><span>🦕</span><span>🐚</span><span>🦶</span><span>🪨</span>
+      </div>
+    </div>
+
+    <div class="choice-grid">
+      <button class="choice-card choice-research" data-go="research" type="button">
+        <span class="choice-icon" aria-hidden="true">🔍</span>
+        <span class="choice-title">Research Lab</span>
+        <span class="choice-desc">15 stops. Read a clue, then answer in a complete sentence.</span>
+        <span class="choice-meta" id="researchMeta">0 of 15 answered</span>
+      </button>
+
+      <button class="choice-card choice-quiz" data-go="quiz" type="button">
+        <span class="choice-icon" aria-hidden="true">🏆</span>
+        <span class="choice-title">Fossil Quiz</span>
+        <span class="choice-desc">8 questions. Pick the best answer and get instant feedback.</span>
+        <span class="choice-meta" id="quizMeta">Not started yet</span>
+      </button>
+    </div>
+
+    <div class="howto">
+      <h2>How to use this site</h2>
+      <ol class="steps">
+        <li><strong>Read</strong> the clue on each research card.</li>
+        <li><strong>Think</strong> about the question, then type your answer.</li>
+        <li><strong>Check</strong> the sample answer to see if you found the clue.</li>
+        <li><strong>Quiz</strong> yourself at the end — 8 quick questions.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ RESEARCH ============ -->
+  <section class="screen" id="screen-research" aria-labelledby="researchTitle" hidden>
+    <div class="screen-head">
+      <div>
+        <p class="eyebrow">Research Lab</p>
+        <h1 id="researchTitle">Read • Think • Answer</h1>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span id="researchCount">0 of 15 answered</span></div>
+        <div class="progress" role="progressbar" aria-labelledby="researchCount" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0" id="researchBar">
+          <span class="progress-fill" id="researchFill"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="research-layout">
+      <nav class="cardmap" aria-label="Research stops">
+        <h2 class="cardmap-title">Stops</h2>
+        <div class="cardmap-grid" id="cardMap"></div>
+      </nav>
+
+      <article class="card" id="researchCard" aria-live="polite">
+        <!-- filled by app.js -->
+      </article>
+    </div>
+
+    <div class="cardnav">
+      <button class="btn btn-ghost" id="prevCard" type="button">← Back</button>
+      <button class="btn btn-ghost" id="printNotes" type="button">🖨️ Print my notes</button>
+      <button class="btn btn-primary" id="nextCard" type="button">Next stop →</button>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="screen" id="screen-quiz" aria-labelledby="quizTitle" hidden>
+    <div class="screen-head">
+      <div>
+        <p class="eyebrow">Fossil Quiz</p>
+        <h1 id="quizTitle">Show what you know</h1>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span id="quizCount">Question 1 of 8</span></div>
+        <div class="progress" role="progressbar" aria-labelledby="quizCount" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" id="quizBar">
+          <span class="progress-fill" id="quizFill"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-shell" id="quizShell">
+      <!-- filled by app.js -->
+    </div>
+  </section>
+
+  <!-- ============ TEACHER ============ -->
+  <section class="screen" id="screen-teacher" aria-labelledby="teacherTitle" hidden>
+    <div class="screen-head">
+      <div>
+        <p class="eyebrow">Teacher zone</p>
+        <h1 id="teacherTitle">Answer key &amp; lesson notes</h1>
+      </div>
+    </div>
+    <div class="teacher-grid" id="teacherContent"></div>
+  </section>
+
+</main>
+
+<footer class="sitefoot">
+  <p>Fossil Detectives • Grade 3 Science • Made for independent work</p>
+  <button class="linkbtn" data-go="teacher" type="button">Teacher zone</button>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<section class="print-sheet" id="printSheet" aria-hidden="true"></section>
+
+<script src="app.js"></script>
+</body>
+</html>
